@@ -1,10 +1,10 @@
-'use strict';
-
-const mongoose = require('mongoose');
-mongoose.Promise = global.Promise;
-const { MONGODB_URI } = require('../config');
-
-const Note = require('../models/note');
+// 'use strict';
+//
+// const mongoose = require('mongoose');
+//
+// const { MONGODB_URI } = require('../config');
+//
+// const Note = require('../models/note');
 
 //================FIND BY SEARCH TERM ==========================//
 mongoose.connect(MONGODB_URI)
@@ -34,8 +34,6 @@ mongoose.connect(MONGODB_URI)
     console.error(`ERROR: ${err.message}`);
     console.error(err);
   });
-
-
 //================FIND BY ID ==========================//
   // mongoose.connect(MONGODB_URI)
   //   .then(() => {
