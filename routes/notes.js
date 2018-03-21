@@ -52,10 +52,11 @@ router.post('/notes', (req, res, next) => {
 
   return Note.create(newNote)
     .then(results => {
-      res.location(`/api/notes/${id}`).status(201).json({ results })
+      res.location(`/api/notes/${id}`).status(201).json(results)
     })
-    .catch(console.error);
-
+    .catch(err => {
+      next(err);
+    });
 });
 
 /* ========== PUT/UPDATE A SINGLE ITEM ========== */
@@ -63,16 +64,23 @@ router.put('/notes/:id', (req, res, next) => {
 
   const id = req.params.id;
   const { title, content} = req.body;
-  const updatedNote = {
+  const options = { new: true };
+  const updateNote = {
     title: title,
     content: content
   };
 
-   return Note.findByIdAndUpdate(id, updatedNote)
-     .then(results => {
-       res.json({results});
-     })
-     .catch(console.error);
+   return Note.findByIdAndUpdate(id, updateNote, options)
+     .then(result => {
+      if (result) {
+        res.json(result);
+      } else {
+        next();
+      }
+    })
+    .catch(err => {
+      next(err);
+    });
 });
 
 /* ========== DELETE/REMOVE A SINGLE ITEM ========== */
@@ -82,7 +90,9 @@ router.delete('/notes/:id', (req, res, next) => {
       .then(results => {
         res.status(204).end();
       })
-      .catch(console.error);
+      .catch(err => {
+        next(err);
+      });
 });
 
 module.exports = router;
