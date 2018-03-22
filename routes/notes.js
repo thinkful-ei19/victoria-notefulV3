@@ -13,7 +13,9 @@ router.get('/notes', (req, res, next) => {
 
     if (searchTerm) {
       const re = new RegExp(searchTerm, 'i');
+
       filter.title = { $regex: re };
+      console.log(filter.title, 'FILTER‹‹‹‹‹‹‹‹‹‹‹‹‹‹››››››››››››››')
     }
 
     return Note.find(filter)

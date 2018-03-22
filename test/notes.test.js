@@ -109,6 +109,27 @@ describe('Notes API resource', function() {
         expect(res.body).to.have.length(data.length);
       });
     });
+
+    it('should check if search term is provided', function () {
+      const searchTerm = 'cat';
+      return chai.request(app).get(`/api/notes?searchTerm=${searchTerm}`)
+        .then((res) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(8);
+        })
+    })
+    it('should check if search term is provided', function () {
+      const searchTerm = 'zzzzzz';
+      return chai.request(app).get(`/api/notes?searchTerm=${searchTerm}`)
+        .then((res) => {
+          expect(res).to.have.status(200);
+          expect(res).to.be.json;
+          expect(res.body).to.be.an('array');
+          expect(res.body).to.have.length(0);
+        })
+    })
   });
 
   describe('GET /api/notes/:id', function () {
