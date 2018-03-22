@@ -28,10 +28,16 @@ router.get('/notes', (req, res, next) => {
 router.get('/notes/:id', (req, res, next) => {
     const id = req.params.id;
     return Note.findById(id)
-      .then(results => {
-        res.json(results);
-      })
-      .catch(next);
+      .then(result => {
+       if (result) {
+         res.json(result);
+       } else {
+        res.status(400).json({ message: 'The `id` is not valid' })
+      }
+    })
+      .catch(err => {
+        next(err);
+      });
 });
 
 /* ========== POST/CREATE AN ITEM ========== */

@@ -39,7 +39,7 @@ describe('Notes API resource', function() {
     it('should create and return a new item when provided valid data', function () {
       const newItem = {
         'title': 'The best article about cats ever!',
-        'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...',
+        'content': 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
         // 'tags': []
       };
       let body;
@@ -63,6 +63,22 @@ describe('Notes API resource', function() {
       expect(body.content).to.equal(data.content);
       });
     });
+
+    it('should return error when title is not provided', function () {
+      const newItem = {
+        content: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...'
+      };
+      return chai.request(app)
+        .post('/api/notes')
+        .send(newItem)
+        .catch(err => err.response)
+        .then(function (res) {
+          expect(res).to.have.status(400);
+          expect(res).to.be.json;
+          expect(res.body).to.be.a('object');
+          expect(res.body.message).to.equal('Missing `title` in request body');
+        })
+    });
   });
 
   describe('GET /api/notes', function () {
@@ -77,6 +93,19 @@ describe('Notes API resource', function() {
         expect(res).to.have.status(200);
         expect(res).to.be.json;
         expect(res.body).to.be.a('array');
+        expect(res.body).to.have.length(data.length);
+      });
+    });
+
+    it('shoud return full list of notes', function () {
+      const allNotes = Note.find();
+      const returnedNotes = chai.request(app).get('/api/notes');
+
+    return Promise.all([allNotes, returnedNotes])
+      .then(([data, res]) => {
+        expect(res).to.have.status(200);
+        expect(res).to.be.json;
+        expect(res.body).to.be.an('array');
         expect(res.body).to.have.length(data.length);
       });
     });
@@ -102,6 +131,28 @@ describe('Notes API resource', function() {
           expect(res.body.id).to.equal(data.id);
           expect(res.body.title).to.equal(data.title);
           expect(res.body.content).to.equal(data.content);
+        });
+    });
+
+    it('should return 400 for bad id', function () {
+      const badId = '000000000000000000404219';
+
+      return chai.request(app).get(`/api/notes/${badId}`)
+      .catch(err => err.response)
+      .then((res) => {
+        console.log(res.status, 'RES STATUS ######################')
+        expect(res).to.have.status(400);
+        expect(res.body).to.be.a('object');
+        expect(res.body.message).to.equal('The `id` is not valid');
+      })
+    })
+
+    it('should respond with a 404 for an invalid id', function () {
+      return chai.request(app)
+        .put('/api/notes/AAAAAAAAAAAAAAAAAAAAAAAA')
+        .catch(err => err.response)
+        .then(res => {
+          expect(res).to.have.status(404);
         });
     });
   })
